@@ -67,4 +67,30 @@ router.get("/interactive-object-types/:id", async (req, res) => {
   res.status(200).json(obj);
 });
 
+router.post("/interactive-object-types", async (req, res) => {
+  const existingType = await IOTypeSchema.find({ typeName: req.body.typeName });
+  if (existingType.length) return res.status(422).json("This type is already exist.")
+  newObj = new IOTypeSchema({ _id: false });
+  newObj.id = new mongoose.Types.ObjectId();
+
+  for (let key in req.body) {
+    if (Object.hasOwnProperty.bind(req.body)(key)) {
+      if (
+        ["labels", "abstractParameter"].includes(key) &&
+        typeof req.body[key] === "string"
+      )
+        newObj[key] = JSON.parse(req.body[key]);
+      else newObj[key] = req.body[key];
+    }
+  }
+  newObj.save((err, doc) => {
+    if (!err) {
+      res.status(201).json(newObj);
+    } else {
+      console.log(err);
+      res.status(406).json(`Not Acceptable: ${err}`);
+    }
+  });
+});
+
 module.exports = router;
