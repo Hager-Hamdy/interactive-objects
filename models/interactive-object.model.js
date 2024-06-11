@@ -63,7 +63,7 @@ var interactiveObjectSchema = new mongoose.Schema(
     updatedAt: { type: Date, default: Date.now },
   },
   {
-    collection: "InteractiveObject",
+    collection: "InteractiveObjects",
     versionKey: false,
   }
 );

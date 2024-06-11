@@ -1,12 +1,10 @@
 require("./db")
 const express = require("express")
 const interactiveObjectsController = require("./controllers/interactive-objects.controller")
-const MCQController = require("./controllers/MCQ.controller")
-const questionTypesController = require("./controllers/objectTypes.controller")
 const uploadFileController = require("./controllers/upload-file")
-const booksController = require("./controllers/book.controller")
-const InteractiveVideoController = require("./controllers/InteractiveVideo.controller")
-const newTypesController = require("./controllers/new-io-types.controller")
+const typesController = require("./controllers/new-io-types.controller")
+const pagesController = require("./controllers/book-pages.controller")
+
 const bodyparser = require("body-parser")
 const cors = require("cors")
 const swaggerJsDoc = require("swagger-jsdoc")
@@ -54,10 +52,7 @@ app.listen(port, () => {
 
 app.use("/api", [
   interactiveObjectsController,
-  MCQController,
-  questionTypesController,
+  typesController,
+  pagesController,
   uploadFileController,
-  booksController,
-  InteractiveVideoController,
-  newTypesController
 ])

@@ -1,27 +1,33 @@
 mongoose = require("mongoose");
 
-var InteractiveObjectTypeSchema = new mongoose.Schema(
+var IOTypeSchema = new mongoose.Schema(
   {
     _id: mongoose.Schema.Types.ObjectId,
-    typeName: { type: String, required: "This field is required." },
-    questionOrExplanation: {
+    typeName: { type: String, required: "This field is required.", unique: true },
+    category: {
       type: String,
       enum: ["Q", "X", "SI", "B", "G"],
     },
-    labels: [{type: Object}],
+    labels: [{ type: Object }],
+    repeatedString: { type: String },
+    repeated2: { type: String },
+    repeated3: { type: String },
+    htmlSeparator: { type: String },
+    abstractParameter: { type: Object },
+    templateId: { type: String },
+    templateName: { type: String },
     templateUrl: { type: String },
-    templateJson: { type: Object },
-    repeatedString: {type: String},
-    htmlseparator: {type: String},
-    abstractParameter: {type: Object},
+    exampleId: { type: String },
+    originalJson: { type: String },
+    modifiedJson: { type: String },
   },
   {
-    collection: "questionTypes",
+    collection: "InteractiveTypes",
     versionKey: false,
   }
 );
 
-InteractiveObjectTypeSchema
+IOTypeSchema
   .virtual("id")
   .get(function () {
     return this._id.toString();
@@ -32,5 +38,5 @@ InteractiveObjectTypeSchema
 
 
 module.exports = {
-  InteractiveObjectTypeSchema: mongoose.model("InteractiveObjectTypeSchema", InteractiveObjectTypeSchema),
+  IOTypeSchema: mongoose.model("IOTypeSchema", IOTypeSchema),
 };
