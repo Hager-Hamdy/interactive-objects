@@ -12,7 +12,7 @@ router.get("/interactive-object-types", async (req, res) => {
     },
     {
       typeName: "Interactive object",
-      labels: [{ BarChart: "Chart" }, { PieChart: "Chart" }, { NumericTable: "Chart"}, { Analytics: "Chart" },
+      labels: [{ BarChart: "Chart" }, { PieChart: "Chart" }, { NumericTable: "Chart" }, { Analytics: "Chart" },
       { Classification: "ImageSlider" }, { DifferentCases: "ImageSlider" }, { Phases: "Agamotto" },
       { Cycles: "Agamotto" }, { Lifecycles: "Agamotto" }, { ChemicalReaction: "Agamotto" },
       { ChemicalEquation: "Agamotto" }, { BeforeAndAfter: "Juxtaposition" }, { TwoEvents: "Juxtaposition" },
@@ -65,6 +65,18 @@ router.get("/interactive-object-types", async (req, res) => {
 router.get("/interactive-object-types/:id", async (req, res) => {
   let obj = await IOTypeSchema.findById(req.params.id);
   res.status(200).json(obj);
+});
+
+router.get("/interactive-object-types/:id", async (req, res) => {
+  let obj = await IOTypeSchema.findById(req.params.id);
+  res.status(200).json(obj);
+});
+
+router.get("/interactive-object-types/find-by-name", async (req, res) => {
+  const typeNames = await IOTypeSchema.find(
+    req.query
+  )
+  res.status(200).json(typeNames[0]);
 });
 
 router.post("/interactive-object-types", async (req, res) => {
