@@ -11,6 +11,7 @@ var bookPageSchema = new mongoose.Schema(
     url: { type: String },
     blocks: [
       {
+        _id: false,
         blockId: { type: String },        
         contentType: { type: String },
         contentValue: { type: String },
