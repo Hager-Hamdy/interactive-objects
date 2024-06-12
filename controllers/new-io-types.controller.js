@@ -8,10 +8,12 @@ router.get("/interactive-object-types", async (req, res) => {
   const bookLabels = [
     {
       typeName: "Simple item",
+      typeCategory: "B",
       labels: [{ Objective: "text" }, { Paragraph: "text" }, { Picture: "image" }, { Voice: "audio" }, { Video: "video" }]
     },
     {
       typeName: "Interactive object",
+      typeCategory: "B",
       labels: [{ BarChart: "Chart" }, { PieChart: "Chart" }, { NumericTable: "Chart" }, { Analytics: "Chart" },
       { Classification: "ImageSlider" }, { DifferentCases: "ImageSlider" }, { Phases: "Agamotto" },
       { Cycles: "Agamotto" }, { Lifecycles: "Agamotto" }, { ChemicalReaction: "Agamotto" },
@@ -23,6 +25,7 @@ router.get("/interactive-object-types", async (req, res) => {
     },
     {
       typeName: "Question",
+      typeCategory: "B",
       labels: [{ GuessTheImage: "Guess Answer" }, { WhatHappensWhen: "Guess Answer" }, { HowItMightHappen: "Guess Answer" },
       { WhyItHappens: "Guess Answer" }, { Justify: "Guess Answer" }, { TrueFalse: "TrueFalse" }, { TextMCQ: "Text MCQ" },
       { FillTheBlanks: "Fill The Blanks" }, { TextDragWords: "Text Drag Words" }, { Dictation: "Dictation" },
@@ -32,16 +35,19 @@ router.get("/interactive-object-types", async (req, res) => {
     },
     {
       typeName: "TOC",
+      typeCategory: "B",
       labels: [{ TOC_Level1: "text" }, { TOC_Level2: "text" }, { TOC_Level3: "text" },
       { Section: "text" }, { SubSection: "text" }, { SubSubSection: "text" }, { SideHeader: "text" }]
     },
     {
       typeName: "Keyword",
+      typeCategory: "B",
       labels: [{ KeywordText: "text" }, { KeywordDefinition: "text" }, { KeywordIllustration: "image" }, { KeywordExplanation: "text" },
       { Acronym: "text" }]
     },
     {
       typeName: "SI",
+      typeCategory: "B",
       labels: [
         { Paragraph: "text" }, { Picture: "image" }, { DialogCards: "Dialog Cards" },
         { FlashCards: "Flash Cards" },
@@ -53,6 +59,30 @@ router.get("/interactive-object-types", async (req, res) => {
         { ImageJuxtaposition: "Image Juxtaposition" },
         { ImageSlider: "Image Slider" },
         { ImageBlinder: "Agamotto" }
+      ]
+    },
+    {
+      typeName: "Text MCQ",
+      typeCategory: "Q",
+      labels: [
+        {
+          "*_Question_": "text"
+        },
+        {
+          "*_OptionText_": "text"
+        },
+        {
+          "_ChosenFeedback_": "text"
+        },
+        {
+          "_notChosenFeedback_": "text"
+        },
+        {
+          "_Tip_": "text"
+        },
+        {
+          "#_Correct_": "Bool"
+        }
       ]
     }
   ]
