@@ -1,5 +1,4 @@
 mongoose = require("mongoose");
-const mongoosePaginate = require("mongoose-paginate-v2");
 
 var blockSchema = new mongoose.Schema(
   {
@@ -11,7 +10,7 @@ var blockSchema = new mongoose.Schema(
     coordinates: { type: Object }
   },
   {
-    collection: "BookPages",
+    collection: "Blocks",
     versionKey: false,
   }
 );
@@ -25,7 +24,6 @@ blockSchema
     this._id = x;
   });
 
-  blockSchema.plugin(mongoosePaginate);
 
 module.exports = {
   blockSchema: mongoose.model("blockSchema", blockSchema),
