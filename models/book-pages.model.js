@@ -11,7 +11,7 @@ var bookPageSchema = new mongoose.Schema(
     url: { type: String },
     blocks: [
       {
-        _id: mongoose.Schema.Types.ObjectId,
+        blockId: { type: String },        
         contentType: { type: String },
         contentValue: { type: String },
         coordinates: { type: Object }
