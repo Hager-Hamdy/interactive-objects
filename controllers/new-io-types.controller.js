@@ -3,8 +3,49 @@ const express = require("express");
 let router = express.Router();
 let IOTypeSchema =
   require("../models/object-types.model").IOTypeSchema;
+const fs = require("fs")
+const request = require("request")
+
+router.get("/test/:id", async (req, res) => {
+  let item = await IOTypeSchema.findById(req.params.id);
+  if (item.templateUrl){
+    res.send("okk")
+     return
+  }
+  const decodedTempalteId = JSON.parse(atob(item.templateId));
+  let templateUrl
+  let url
+  await request.get("http://34.246.140.123:4000/api/los/" + decodedTempalteId.id, async function (error, response, body) {
+    url = JSON.parse(body).url
+    await request.get("http://34.246.140.123:4000/api/signedurl?url=" + url, function (error, response, body2) {
+      templateUrl = JSON.parse(body2).LOPreSignedURL
+      request.get(templateUrl, function (error, response, body3) {
+        fs.writeFileSync(`./templates/${url.split("/").pop()}`, body3)
+        item.templateUrl = `https://lom-dev.eduedges.com/templates/${url.split("/").pop()}`
+        IOTypeSchema.updateOne(
+          { _id: req.params.id },
+          {
+            $set: item,
+          },
+          { new: false, runValidators: true, returnNewDocument: true, upsert: true },
+          (err, doc) => {
+          }
+        );
+      })
+      res.send("ok")
+    })
+  })
+})
+
 
 router.get("/interactive-object-types", async (req, res) => {
+  const types = await IOTypeSchema.find(
+    {
+    
+    }, {
+    typeName: 1, labels: 1, _id: 1
+  }
+  )
   const bookLabels = [
     {
       typeName: "Simple item",
@@ -61,30 +102,32 @@ router.get("/interactive-object-types", async (req, res) => {
         { ImageBlinder: "Agamotto" }
       ]
     },
-    {
-      typeName: "Text MCQ",
-      typeCategory: "Q",
-      labels: [
-        {
-          "*_Question_": "text"
-        },
-        {
-          "*_OptionText_": "text"
-        },
-        {
-          "_ChosenFeedback_": "text"
-        },
-        {
-          "_notChosenFeedback_": "text"
-        },
-        {
-          "_Tip_": "text"
-        },
-        {
-          "#_Correct_": "Bool"
-        }
-      ]
-    }
+    ...types
+    // {
+    //   typeName: "Text MCQ",
+    //   typeCategory: "Q",
+    //   labels: [
+    //     {
+    //       "*_Question_": "text"
+    //     },
+    //     {
+    //       "*_OptionText_": "text"
+    //     },
+    //     {
+    //       "_ChosenFeedback_": "text"
+    //     },
+    //     {
+    //       "_notChosenFeedback_": "text"
+    //     },
+    //     {
+    //       "_Tip_": "text"
+    //     },
+    //     {
+    //       "#_Correct_": "Bool"
+    //     }
+    //   ]
+    // },
+
   ]
   // const typeNames = await IOTypeSchema.find(
   //   req.query, {}
@@ -134,5 +177,37 @@ router.post("/interactive-object-types", async (req, res) => {
     }
   });
 });
+
+
+router.patch("/interactive-object-types/:id", (req, res) => {
+  const id = req.params.id;
+  const obj = { _id: id };
+  for (let key in req.body) {
+    if (req.body.hasOwnProperty(key)) {
+      if (
+        ["labels", "abstractParameter"].includes(key) &&
+        typeof req.body[key] === "string"
+      ) obj[key] = JSON.parse(req.body[key]);
+      else obj[key] = req.body[key];
+    }
+  }
+
+  obj.updatedAt = new Date().toISOString();
+  IOTypeSchema.updateOne(
+    { _id: id },
+    {
+      $set: obj,
+    },
+    { new: false, runValidators: true, returnNewDocument: true, upsert: true },
+    (err, doc) => {
+      if (!err) {
+        res.status(200).json(obj);
+      } else {
+        res.status(500).json(err);
+      }
+    }
+  );
+});
+
 
 module.exports = router;

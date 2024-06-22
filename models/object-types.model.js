@@ -20,6 +20,9 @@ var IOTypeSchema = new mongoose.Schema(
     exampleId: { type: String },
     originalJson: { type: String },
     modifiedJson: { type: String },
+    description: { type: String },
+    icon: { type: String },
+
   },
   {
     collection: "InteractiveTypes",
