@@ -6,45 +6,47 @@ let IOTypeSchema =
 const fs = require("fs")
 const request = require("request")
 
-router.get("/test/:id", async (req, res) => {
-  let item = await IOTypeSchema.findById(req.params.id);
-  if (item.templateUrl){
-    res.send("okk")
-     return
-  }
-  const decodedTempalteId = JSON.parse(atob(item.templateId));
-  let templateUrl
-  let url
-  await request.get("http://34.246.140.123:4000/api/los/" + decodedTempalteId.id, async function (error, response, body) {
-    url = JSON.parse(body).url
-    await request.get("http://34.246.140.123:4000/api/signedurl?url=" + url, function (error, response, body2) {
-      templateUrl = JSON.parse(body2).LOPreSignedURL
-      request.get(templateUrl, function (error, response, body3) {
-        fs.writeFileSync(`./templates/${url.split("/").pop()}`, body3)
-        item.templateUrl = `https://lom-dev.eduedges.com/templates/${url.split("/").pop()}`
-        IOTypeSchema.updateOne(
-          { _id: req.params.id },
-          {
-            $set: item,
-          },
-          { new: false, runValidators: true, returnNewDocument: true, upsert: true },
-          (err, doc) => {
-          }
-        );
-      })
-      res.send("ok")
+
+router.get("/test", async (req, res) => {
+  const types = await IOTypeSchema.find()
+  for await (let item of types) {
+    try {
+      // console.log(atob(item.templateId))
+    const decodedTempalteId = JSON.parse(atob(item.templateId));
+    let templateUrl
+    let url
+    await request.get("http://34.246.140.123:4000/api/los/" + decodedTempalteId.id, async function (error, response, body) {
+      if (JSON.parse(body)) {
+        url = JSON.parse(body).url
+        await request.get("http://34.246.140.123:4000/api/signedurl?url=" + url, function (error, response, body2) {
+          templateUrl = JSON.parse(body2).LOPreSignedURL
+          request.get(templateUrl, function (error, response, body3) {
+            // fs.writeFileSync(`./templates/${url.split("/").pop()}`, body3)
+            item.templateUrl = `https://s3.eu-west-1.amazonaws.com/lom-dev.eduedges.com/templates/${url.split("/").pop()}`
+            IOTypeSchema.updateOne(
+              { _id: item._id },
+              {
+                $set: item,
+              },
+              { new: false, runValidators: true, returnNewDocument: true, upsert: true },
+              (err, doc) => {
+              }
+            );
+          })
+        })
+      }
+
     })
-  })
+  }catch(err) {
+    console.log(item.typeName, item._id)
+    // console.log(err)
+  }
+  }
 })
 
 
 router.get("/interactive-object-types", async (req, res) => {
   const types = await IOTypeSchema.find(
-    {
-    
-    }, {
-    typeName: 1, labels: 1, _id: 1
-  }
   )
   const bookLabels = [
     {

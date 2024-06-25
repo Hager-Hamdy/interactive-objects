@@ -51,7 +51,7 @@ router.post("/book-pages", async (req, res) => {
 router.post("/save-blocks", async (req, res) => {
   try {
     const { blocks } = req.body
-    blocks.forEach(async element => {
+    for await (let element of blocks) {
       const { pageId, contentType, contentValue, coordinates } = element
 
       const newBlock = new blockSchema({ _id: false });
@@ -63,14 +63,15 @@ router.post("/save-blocks", async (req, res) => {
       newBlock.save();
       const page = await bookPageSchema.findById(pageId);
 
-      page.blocks = [...page.blocks, {
+      const newBlocks = [...page.blocks, {
         blockId: newBlock.blockId,
         coordinates,
         contentType,
         contentValue
       }]
 
-      bookPageSchema.updateOne(
+      page.blocks = newBlocks
+      await bookPageSchema.updateOne(
         { _id: pageId },
         {
           $set: page,
@@ -79,9 +80,7 @@ router.post("/save-blocks", async (req, res) => {
         (err, doc) => { }
       );
 
-
-
-    });
+    }
     res.status(200).json("Blocks save successfully");
   } catch (err) {
     res.status(500).json(err);
